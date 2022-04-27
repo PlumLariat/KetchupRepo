@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tictactoe_v3.DriverController">
+   <children>
+      <Button fx:id="localPlayButton" layoutX="67.0" layoutY="302.0" mnemonicParsing="false" onAction="#onLocalPlayPressed" prefHeight="55.0" prefWidth="138.0" text="Local Play" />
+      <Button fx:id="onlinePlayButton" layoutX="401.0" layoutY="302.0" mnemonicParsing="false" onAction="#onlinePlayPressed" prefHeight="55.0" prefWidth="138.0" text="Online Play" />
+      <Label fx:id="menuLabel" layoutX="235.0" layoutY="48.0" text="Welcome to Tic Tac Toe!" />
+   </children>
+</AnchorPane>
