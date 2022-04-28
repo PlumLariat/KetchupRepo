@@ -20,28 +20,6 @@ public class Driver extends Application {
         stage.setTitle("tic tac toe");
         stage.show();
 
-
-
-        /*
-        Parent root = FXMLLoader.load(getClass().getResource("TwoPlayerLocal.fxml"));
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Local 2 Player Game");
-        stage.show();
-        */
-
-
-
-        // This'll be the version with the computer player
-        /*
-        Parent root = FXMLLoader.load(getClass().getResource("PlayerVsAI.fxml"));
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Player vs. AI");
-        stage.show();
-        */
-
-
     }
 
     public static void main(String[] args) {

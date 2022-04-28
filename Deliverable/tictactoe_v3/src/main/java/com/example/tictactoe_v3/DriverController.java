@@ -17,9 +17,7 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 public class DriverController implements TicTacToeConstants{
@@ -39,7 +37,7 @@ public class DriverController implements TicTacToeConstants{
         Boolean choice = LocalOrAIPrompt.display("Choose Game Type","Pick a game time to play.");
 
         if (choice){
-            Parent root = FXMLLoader.load(getClass().getResource("TwoPlayerLocalController.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("TwoPlayerLocal.fxml"));
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root,600,600);
             stage.setTitle("Tic Tac Toe! (Local)");
@@ -92,6 +90,11 @@ public class DriverController implements TicTacToeConstants{
 
     // Host name or ip
     private String host = "localhost";
+    private final int PORT_NUMBER = 6969;
+
+    // ObjectSockets
+    private ObjectInputStream moveFromServer;
+    private ObjectOutputStream moveToServer;
 
 
 
@@ -111,9 +114,10 @@ public class DriverController implements TicTacToeConstants{
         borderPane.setBottom(lblStatus);
 
         // Create a scene and place it in the stage
-        Scene scene = new Scene(borderPane, 320, 350);
+        Scene scene = new Scene(borderPane, 600, 600);
         stage.setTitle("TicTacToeClient"); // Set the stage title
         stage.setScene(scene); // Place the scene in the stage
+        stage.setResizable(false);
         stage.show(); // Display the stage
 
         //stage.setTitle("poopballs");
@@ -127,7 +131,7 @@ public class DriverController implements TicTacToeConstants{
     private void connectToServer() {
         try {
             // Create a socket to connect to the server
-            Socket socket = new Socket(host, 8000);
+            Socket socket = new Socket(host, PORT_NUMBER);
 
             // Create an input stream to receive data from the server
             fromServer = new DataInputStream(socket.getInputStream());
@@ -188,6 +192,7 @@ public class DriverController implements TicTacToeConstants{
                 }
             }
             catch (Exception ex) {
+                System.out.println("aw looks like the server isn't running or some jazz.");
                 ex.printStackTrace();
             }
         }).start();
@@ -262,6 +267,11 @@ public class DriverController implements TicTacToeConstants{
         Platform.runLater(() -> cell[row][column].setToken(otherToken));
     }
 
+    private void WHATIFWEDIDTHEWHOLETHINGINTWODAYS() throws IOException, ClassNotFoundException {
+        sendMoveObj();
+        receiveMoveObj();
+    }
+
     // An inner class for a cell
     public class Cell extends Pane {
         // Indicate the row and column of this cell in the board
@@ -276,6 +286,7 @@ public class DriverController implements TicTacToeConstants{
             this.column = column;
             this.setPrefSize(2000, 2000); // What happens without this?
             setStyle("-fx-border-color: black"); // Set cell's border
+            //setStyle("-fx-background-color: grey"); // sets the background
             this.setOnMouseClicked(e -> handleMouseClick());
         }
 
@@ -303,6 +314,13 @@ public class DriverController implements TicTacToeConstants{
                 line2.endXProperty().bind(this.widthProperty().subtract(10));
 
                 // Add the lines to the pane
+
+                line1.setStrokeWidth(10);
+                line2.setStrokeWidth(10);
+
+                line1.setStroke(Color.BLUE);
+                line2.setStroke(Color.BLUE);
+
                 this.getChildren().addAll(line1, line2);
             }
             else if (token == 'O') {
@@ -317,7 +335,9 @@ public class DriverController implements TicTacToeConstants{
                         this.widthProperty().divide(2).subtract(10));
                 ellipse.radiusYProperty().bind(
                         this.heightProperty().divide(2).subtract(10));
-                ellipse.setStroke(Color.BLACK);
+
+                ellipse.setStrokeWidth(10);
+                ellipse.setStroke(Color.INDIANRED);
                 ellipse.setFill(Color.WHITE);
 
                 getChildren().add(ellipse); // Add the ellipse to the pane
@@ -336,5 +356,21 @@ public class DriverController implements TicTacToeConstants{
                 waiting = false; // Just completed a successful move
             }
         }
+    }
+
+    // Send this player's move to the server
+    private void sendMoveObj() throws IOException {
+        MoveMessage move = (new MoveMessage(rowSelected,columnSelected,"Sending move to controller."));
+        moveToServer.writeObject(move);
+    }
+
+    // Grab Some move from the controller.
+    private void receiveMoveObj() throws IOException, ClassNotFoundException {
+        // Get the other player's move
+        MoveMessage incomingMove = (MoveMessage) moveFromServer.readObject();
+
+        int row = incomingMove.getRow();
+        int column = incomingMove.getCol();
+        Platform.runLater(() -> cell[row][column].setToken(otherToken));
     }
 }

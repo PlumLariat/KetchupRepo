@@ -14,9 +14,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
 
+
+
+
 public class TicTacToeServer extends Application
         implements TicTacToeConstants {
     private int sessionNo = 1; // Number a session
+
+    final int PORT_NUMBER = 6969;
 
     @Override // Override the start method in the Application class
     public void start(Stage primaryStage) {
@@ -31,9 +36,9 @@ public class TicTacToeServer extends Application
         new Thread( () -> {
             try {
                 // Create a server socket
-                ServerSocket serverSocket = new ServerSocket(8000);
+                ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
                 Platform.runLater(() -> taLog.appendText(new Date() +
-                        ": Server started at socket 8000\n"));
+                        ": Server started at socket " + PORT_NUMBER +"\n"));
 
                 // Ready to create a session for every two players
                 while (true) {
